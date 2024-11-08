@@ -11,7 +11,7 @@ sock.connect("tcp://127.0.0.1:5555");
 
 /**end point to get the current date and time based on location */
 
-app.length("/api/time", async (req, res) => {
+app.get("/api/time", async (req, res) => {
   const { location } = req.query;
 
   if (!location) {

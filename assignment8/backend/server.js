@@ -4,30 +4,39 @@ const zmq = require("zeromq");
 const app = express();
 const port = 4000;
 
-/**create a zeromq request to communicate with the microservice */
+const cors = require("cors");
+app.use(cors());
 
+
+// ZeroMQ Request socket
 const sock = new zmq.Request();
-sock.connect("tcp://127.0.0.1:5555");
 
-/**end point to get the current date and time based on location */
+// Connect to the ZeroMQ microservice
+const connectToDateService = async () => {
+  console.log("Connecting to Date Service...");
+  await sock.connect("tcp://127.0.0.1:5556");
+  console.log("Connected to Date Service");
+};
 
-app.get("/api/time", async (req, res) => {
-  const { location } = req.query;
-
-  if (!location) {
-    return res.status(400).json({ error: "location is required" });
-  }
-
+// Route to get the current date
+app.get("/api/date", async (req, res) => {
   try {
-    //send the location to the microservice and receive the date and time
-    await sock.send(location)
-    const [response] = await sock.receive();
-    res.json({datetime: response.toString()})
+    console.log("Requesting date from ZeroMQ service...");
+    await sock.send("Get date");
+    const [reply] = await sock.receive();
+    console.log("Received response from ZeroMQ service:", reply.toString());
+
+    res.json({ date: reply.toString() });
   } catch (error) {
-    res.status(500).json({ error: "Failed to connect to time service" });
+    console.error("Error communicating with ZeroMQ service:", error);
+    res.status(500).json({ error: "Failed to retrieve date" });
   }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
+
+
+// Start Express server
+app.listen(port, async () => {
+  console.log(`Express server is running on http://localhost:${port}`);
+  await connectToDateService();
+});

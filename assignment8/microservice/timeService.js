@@ -4,31 +4,57 @@ const axios = require("axios");
 const sock = new zmq.Reply();
 
 /** Function to get the current date and time based on a location */
+// const getCurrentDateTime = async (location) => {
+//   try {
+//     // Use default timezone if location is empty or invalid
+//     const timeZone = location.trim() ? location : "America/New_York";
+
+//     // Fetch the time for the given location
+//     const response = await axios.get(`http://worldtimeapi.org/api/timezone/${timeZone}`);
+
+//     console.log("API Response Status Code:", response.status);
+
+//     if (response.status === 200) {
+//       console.log("response.data.datetime:", response.data.datetime);
+//       return response.data.datetime;
+//     } else {
+//       return `Error: Received status code ${response.status}`;
+//     }
+//   } catch (error) {
+//     // Log error details for debugging
+//     console.error("API error:", error.response ? error.response.data : error.message);
+
+//     // Return fallback Eastern Time
+//     const easternTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+//     return `Error: Defaulting to Eastern Time: ${easternTime}`;
+//   }
+// };
+
 const getCurrentDateTime = async (location) => {
   try {
-    // Use default timezone if location is empty or invalid
-    const timeZone = location.trim() ? location : "America/New_York";
+    const timeZone = location.trim() ? location.trim() : "America/New_York";
 
-    // Fetch the time for the given location
     const response = await axios.get(`http://worldtimeapi.org/api/timezone/${timeZone}`);
-
+    
     console.log("API Response Status Code:", response.status);
+    console.log("Full API Response:", response.data);
 
-    if (response.status === 200) {
-      console.log("response.data.datetime:", response.data.datetime);
+    if (response.status === 200 && response.data.datetime) {
+      console.log("Valid datetime received:", response.data.datetime);
       return response.data.datetime;
+    } else if (response.data.error) {
+      console.error("API Error:", response.data.error);
+      return `Error: ${response.data.error}`;
     } else {
-      return `Error: Received status code ${response.status}`;
+      return "Error: Unexpected response structure";
     }
   } catch (error) {
-    // Log error details for debugging
     console.error("API error:", error.response ? error.response.data : error.message);
-
-    // Return fallback Eastern Time
     const easternTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
     return `Error: Defaulting to Eastern Time: ${easternTime}`;
   }
 };
+
 
 /** Function to start the time service */
 const startTimeService = async () => {

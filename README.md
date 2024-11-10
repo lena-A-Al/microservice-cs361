@@ -19,3 +19,23 @@ Clone the whole repository to the local machine:
 ```
 
 ## How to run the repository locally:
+```
+inside backend folder run the following command:
+npm install
+node server.js
+
+
+inside microservice folder run the following command:
+npm install 
+node DateServer.js
+
+
+inside backend folder run the following command:
+npm install
+npm start
+```
+
+## Message Formats:
+The microservice will send the message/date in the following format (month, day, year)
+(e.g, November 9, 2024)
+

@@ -97,5 +97,5 @@ app.get("/api/date", async (req, res) => {
 The microservice will send the message/date in the following format (month, day, year)
 (e.g, November 9, 2024)
 
-
+## UML sequence diagram
 ![UML sequence diagram](./frontend/src/assets/UMLSequenceDiagram.png)
